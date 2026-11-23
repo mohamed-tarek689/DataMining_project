@@ -37,7 +37,7 @@ def clean_transactions(file_df):
         items = []
 
         for item in str(value).split(","):#convert df to string and add char in item
-            item = item.strip()
+            item = item.strip().upper()
 
             if item:
                 items.append(item)
