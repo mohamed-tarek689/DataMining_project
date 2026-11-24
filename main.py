@@ -1,33 +1,8 @@
 from excel_reader import read_transactions, clean_transactions
-from level_filtering import run_level_filtering
-
-
-def compute_initial_l1(transactions, min_support):
-    total_transactions = len(transactions)
-    if total_transactions == 0:
-        return {}
-
-    item_counts = {}
-    for transaction in transactions:
-        for item in transaction:
-            key = (item,)
-            if key in item_counts:
-                item_counts[key] += 1
-            else:
-                item_counts[key] = 1
-
-    l1 = {}
-    for key, count in item_counts.items():
-        support = count / total_transactions
-        if support >= min_support:
-            l1[key] = round(support, 4)
-
-    return l1
-
+from apriori import compute_initial_l1, run_level_filtering
 
 def placeholder_generate_candidates(prev_itemsets, level_k):
     return []
-
 
 def main():
     min_support = 0.2
@@ -48,27 +23,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-# from excel_reader import read_transactions, clean_transactions
-# def main():
-#     df = read_transactions("Horizontal_Format.xlsx")
-
-#     transactions = clean_transactions(df)
-#     print(transactions)
-# if __name__ == "__main__":
-#     main()
-
-
-
-
-
-
-
