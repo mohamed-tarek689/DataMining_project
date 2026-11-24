@@ -1,11 +1,11 @@
 from excel_reader import read_transactions, clean_transactions
 from apriori import compute_initial_l1, run_level_filtering
+from candidates import generate_candidates
 
-def placeholder_generate_candidates(prev_itemsets, level_k):
-    return []
+
 
 def main():
-    min_support = 0.2
+    min_support = 0.6
     df = read_transactions("Horizontal_Format.xlsx")
     transactions = clean_transactions(df)
 
@@ -13,7 +13,7 @@ def main():
     levels = run_level_filtering(
         transactions=transactions,
         initial_L1=initial_l1,
-        generate_candidates_fn=placeholder_generate_candidates,
+        generate_candidates_fn=generate_candidates,
         min_support=min_support,
     )
 
