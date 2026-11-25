@@ -12,7 +12,6 @@ def _flatten_levels(levels):
 
 
 def plot_frequent_itemsets_support(levels, save_path=None, show=True):
-    """Plot support values for all frequent itemsets across Apriori levels."""
     labels, supports = _flatten_levels(levels)
     if not labels:
         raise ValueError("There are no frequent itemsets to visualize")
@@ -43,11 +42,7 @@ def plot_threshold_experiments(
     save_path=None,
     show=True,
 ):
-    """
-    Visualize the number of strong rules while varying support and confidence.
-    support_results: rows with min_support and strong_rules_count.
-    confidence_results: rows with min_confidence and strong_rules_count.
-    """
+
     if not support_results and not confidence_results:
         raise ValueError("No threshold experiment results were provided")
 

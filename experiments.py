@@ -1,6 +1,6 @@
 from apriori import compute_initial_l1, run_level_filtering
 from candidates import generate_candidates
-from rules import generate_association_rules, get_strong_association_rules
+from association_rules import generate_association_rules, get_strong_association_rules
 
 
 def run_threshold_experiments(
