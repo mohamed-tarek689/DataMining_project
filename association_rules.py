@@ -23,10 +23,10 @@ def get_support(transactions, candidate):
 
 def get_confidence(transactions, antecedent, consequent):
     union = set(antecedent) | set(consequent)
-    antecedent_support = get_support(transactions, antecedent)
-    if antecedent_support == 0:
+    antecedent_frequency = get_frequency(transactions, antecedent)
+    if antecedent_frequency == 0:
         return 0
-    return get_support(transactions, union) / antecedent_support
+    return get_frequency(transactions, union) / antecedent_frequency
 
 
 def get_lift(transactions, antecedent, consequent):
