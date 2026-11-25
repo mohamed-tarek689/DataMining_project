@@ -57,7 +57,7 @@ def get_strong_association_rules(transactions, rules, min_support, min_confidenc
         confidence = get_confidence(transactions, antecedent, consequent)
         lift = get_lift(transactions, antecedent, consequent)
 
-        if support >= min_support and lift >= min_confidence:
+        if support >= min_support and confidence >= min_confidence:
             strong_rules.append({
                 "antecedent": antecedent,
                 "consequent": consequent,
