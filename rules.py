@@ -1,3 +1,4 @@
+from itertools import combinations
 from apriori import contains_all_items
 
 
@@ -6,49 +7,65 @@ def get_frequency(transactions, candidate):
     for transaction in transactions:
         if contains_all_items(candidate, transaction):
             frequency += 1
-
     return frequency
+
 
 def get_total_transactions(transactions):
     return len(transactions)
 
 
 def get_support(transactions, candidate):
-    support = 0
-    if get_total_transactions(transactions) != 0:
-        support = get_frequency(transactions, candidate) / get_total_transactions(transactions)
-
-    return support
-
+    total = get_total_transactions(transactions)
+    if total == 0:
+        return 0
+    return get_frequency(transactions, candidate) / total
 
 
 def get_confidence(transactions, antecedent, consequent):
-    confidence = 0
     union = set(antecedent) | set(consequent)
     antecedent_support = get_support(transactions, antecedent)
-    if antecedent_support != 0:
-        confidence = get_support(transactions, union) / antecedent_support
-
-    return confidence
+    if antecedent_support == 0:
+        return 0
+    return get_support(transactions, union) / antecedent_support
 
 
 def get_lift(transactions, antecedent, consequent):
-    lift = 0
-    intersection = set(antecedent) & set(consequent)
     consequent_support = get_support(transactions, consequent)
-    if consequent_support != 0:
-        lift = get_confidence(transactions, antecedent, consequent) / consequent_support
-
-    return lift
+    if consequent_support == 0:
+        return 0
+    return get_confidence(transactions, antecedent, consequent) / consequent_support
 
 
 def determine_correlation(transactions, antecedent, consequent):
-    if get_lift(transactions, antecedent, consequent) == 1:
-        return "independant"
-    elif get_lift(transactions, antecedent, consequent) > 1:
+    if get_support(transactions, consequent) == 0:
+        return "undefined (consequent never occurs)"
+    lift = get_lift(transactions, antecedent, consequent)
+    if lift == 1:
+        return "independent"
+    elif lift > 1:
         return "positive correlation"
     else:
         return "negative correlation"
+
+
+def generate_association_rules(levels):
+    rules = []
+
+    for level, itemsets in levels.items():
+        if level < 2:
+            continue
+
+        for itemset in itemsets:
+            for size in range(1, len(itemset)):
+                for antecedent in combinations(itemset, size):
+                    consequent = tuple(
+                        item for item in itemset
+                        if item not in antecedent
+                    )
+                    rules.append((antecedent, consequent))
+
+    return rules
+
 
 def get_strong_association_rules(transactions, rules, min_support, min_confidence):
     strong_rules = []
