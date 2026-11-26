@@ -10,8 +10,8 @@ def main():
     min_support = 0.3
     min_confidence = 0.75
 
-    df = read_transactions("Lecture_Example.xlsx")
-    #df = read_transactions("Horizontal_Format.xlsx")
+    #df = read_transactions("Data/Lecture_Example.xlsx")
+    df = read_transactions("Data/Horizontal_Format.xlsx")
     transactions = clean_transactions(df)
 
     initial_l1 = compute_initial_l1(transactions, min_support)
@@ -24,6 +24,8 @@ def main():
 
     for level, itemsets in levels.items():
         print(f"L{level}: {itemsets}")
+
+    print("\nTotal Frequent Itemsets:", sum(len(level) for level in levels.values()))
 
     rules = generate_association_rules(levels)
     strong_rules = get_strong_association_rules(
@@ -45,7 +47,7 @@ def main():
         print(f"Lift: {rule['lift']:.4f}")
         print(f"Correlation: {rule['correlation']}")
 
-    print("Total Association Rules:", len(rules))
+    print("\nTotal Association Rules:", len(rules))
     print("Total Strong Rules:", len(strong_rules))
 
     if any(levels.values()):

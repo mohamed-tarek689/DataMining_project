@@ -68,6 +68,9 @@ def generate_association_rules(levels):
 
 
 def get_strong_association_rules(transactions, rules, min_support, min_confidence):
+    if not 0 <= min_confidence <= 1:
+        raise ValueError("min_confidence must be between 0 and 1")
+
     strong_rules = []
     for antecedent, consequent in rules:
         support = get_support(transactions, set(antecedent) | set(consequent))

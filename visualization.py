@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 
-
 def _flatten_levels(levels):
     labels = []
     supports = []

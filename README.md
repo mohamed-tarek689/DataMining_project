@@ -1,204 +1,83 @@
 # Apriori Algorithm – Data Mining Project
 
-A Python implementation of the Apriori algorithm for mining frequent itemsets and association rules from transactional data stored in Excel. The team implements the Apriori logic directly rather than relying on a ready-made Apriori library.
+This Python project reads market-basket transactions from Excel and implements Apriori directly. It prints the frequent itemsets at each level, generates association rules, and shows support, confidence, lift, and the dependency indicated by lift for each strong rule.
 
-## Project Status
+## Run the project
 
-**Phase 3 completed:** Excel data preparation, support counting, the Apriori engine, and candidate generation and pruning are implemented and integrated. The program currently generates all frequent itemset levels and displays their support values.
-
-| Member | Responsibility | Status |
-| --- | --- | --- |
-| Student 1 | Excel input, data preparation, and integration | Data preparation implemented |
-| Student 2 | Support counting and Apriori engine | Implemented and tested |
-| Student 3 | Candidate generation and pruning | Implemented, tested, and integrated |
-| Student 4 | Association rules, confidence, and lift | Pending integration |
-| Student 5 | Visualization, threshold experiments, and testing | Pending integration |
-
-The association rule and visualization modules are not yet present in the repository. Their test files are currently empty. The full project is not yet ready for final delivery.
-
-## Project Requirements
-
-Based on `Apriori_Description.pdf`, the project must:
-
-- [x] Read transactions from an Excel file (horizontal transaction format).
-- [x] Generate frequent itemsets and display their support values.
-- [ ] Visualize frequent itemset support using bar charts.
-- [ ] Generate association rules from frequent itemsets.
-- [ ] Extract strong association rules.
-- [ ] Calculate Lift to measure item dependencies.
-- [ ] Run experiments with different minimum support and confidence values (support tested; confidence pending).
-- [x] Generate all frequent itemset levels (`L1`, `L2`, ..., `Lk`).
-- [ ] Provide the complete Python (`.py`) source files for final delivery (current modules are available).
-
-## Tools and Dependencies
-
-- Python 3 — implementation and built-in `unittest` testing
-- `pandas` and `openpyxl` — reading Excel files
-- `matplotlib` — planned support bar charts
-
-Install dependencies from the project root:
+Open a terminal in the project folder, alongside `main.py` and the two Excel workbooks. Use Python 3 to install the dependencies and start the program.
 
 ```bash
-python -m pip install -r requirements.txt
-```
-
-## Current Project Structure
-
-```text
-DataMining_project/
-├── Horizontal_Format.xlsx
-├── excel_reader.py
-├── apriori.py
-├── candidates.py
-├── main.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-└── tests/
-    ├── test_excel_reader.py
-    ├── test_support.py
-    ├── test_apriori.py
-    ├── test_candidate_generation.py
-    ├── test_integration.py
-    ├── test_association_rules.py   # Placeholder (empty)
-    └── test_visualization.py      # Placeholder (empty)
-```
-
-Planned modules: `association_rules.py` and `visualization.py`.
-
-## Algorithm Workflow
-
-1. Read the Excel file and clean the transaction data.
-2. Calculate support for individual items and generate `L1`.
-3. Sort and deduplicate the previous frequent itemsets, then join those with a matching prefix to generate candidates.
-4. Apply candidate pruning using the Apriori property: every subset of size `k - 1` must be frequent. This step is unnecessary for `C2`.
-5. Calculate the support of the remaining candidates and retain those meeting minimum support to produce `Lk`.
-6. Repeat until no candidates or no frequent itemsets remain.
-7. **Planned:** Generate association rules, calculate confidence and lift, and identify strong rules.
-8. **Planned:** Visualize support values and compare different support and confidence thresholds.
-
-## Module Responsibilities and Interfaces
-
-| Module | Main functions | Responsibility |
-| --- | --- | --- |
-| `excel_reader.py` | `read_transactions`, `clean_transactions`, `remove_duplicates` | Read and normalize Excel transactions |
-| `apriori.py` | `compute_initial_l1`, `contains_all_items`, `filter_candidates_by_support`, `run_level_filtering`, `validate_min_support` | Support counting, frequent itemset filtering, and level-wise iteration |
-| `candidates.py` | `join_itemsets`, `prune_candidates`, `generate_candidates` | Joining, candidate pruning, lexicographic ordering, and duplicate prevention |
-| `main.py` | `main` | Connect the implemented modules and print frequent itemsets |
-
-### Integration Contract
-
-- Transactions are represented as a list of lists of strings, e.g. `[["A", "B"], ["A", "C"]]`.
-- The Excel file must contain an `items` column with comma-separated items. Cleaning strips whitespace, converts items to uppercase, removes duplicates within each transaction, and skips empty transactions.
-- Itemsets are represented as tuples of distinct items in lexicographic order, e.g. `("A", "B")`.
-- `generate_candidates(prev_itemsets, level_k)` receives a list of frequent `(k - 1)`-itemset tuples and returns a list of candidate `k`-itemset tuples after joining and pruning. It assumes valid levels (`k >= 2`) and sorted input tuples.
-- `run_level_filtering(transactions, initial_L1, generate_candidates_fn, min_support)` receives the candidate generation function and returns a dictionary of levels, with each level containing itemset tuples mapped to their support values.
-- Minimum support is a fraction in the range `(0, 1]`; support is calculated as the number of transactions containing the itemset divided by the total number of transactions.
-
-Example output structure (illustrative):
-
-```python
-{
-    1: {("A",): 0.75, ("B",): 0.75, ("C",): 0.5},
-    2: {("A", "B"): 0.5, ("A", "C"): 0.5, ("B", "C"): 0.5},
-    3: {("A", "B", "C"): 0.5}
-}
-```
-
-The planned association rule module will consume frequent itemsets and a minimum confidence threshold; the visualization module will consume itemsets and their support values.
-
-## Running the Project
-
-Clone or download the repository, then navigate to the project root:
-
-```bash
-git clone https://github.com/mohamed-tarek689/DataMining_project.git
-cd DataMining_project
 python -m pip install -r requirements.txt
 python main.py
 ```
 
-The current program reads `Horizontal_Format.xlsx` from the project root. The default minimum support in `main.py` is `0.6` (60%). To try a different threshold, change the `min_support` value in `main.py` and run the program again.
+The default input is `Lecture_Example.xlsx`. In `main.py`, `min_support = 0.3` means 30% and `min_confidence = 0.75` means 75%. To run the other example, change the active filename in `read_transactions(...)` to `Horizontal_Format.xlsx` and rerun the same command. Support accepts values in `(0, 1]` and confidence accepts values in `[0, 1]`. An itemset or rule exactly on a threshold qualifies.
 
-With the supplied dataset and 60% minimum support, the expected frequent itemsets are:
+The first chart shows one bar per frequent itemset, with support on the vertical axis. With an interactive plotting backend, close the first chart to continue to the experiments. The next figure shows how the strong-rule count changes as each threshold varies.
 
-| Level | Itemset | Support |
-| --- | --- | ---: |
-| L1 | E | 0.8 |
-| L1 | K | 1.0 |
-| L1 | M | 0.6 |
-| L1 | O | 0.6 |
-| L1 | Y | 0.6 |
-| L2 | E, K | 0.8 |
-| L2 | E, O | 0.6 |
-| L2 | K, M | 0.6 |
-| L2 | K, O | 0.6 |
-| L2 | K, Y | 0.6 |
-| L3 | E, K, O | 0.6 |
+## Excel input
 
-The order of entries printed within `L1` may vary without changing the result.
+Use the first worksheet and include a column named `items`. Each row represents one transaction. Put the item names in one cell and separate them with commas.
 
-### Validation at Different Minimum Support Thresholds
+| items |
+| --- |
+| A, B, C |
+| A, C |
+| B |
 
-| Minimum support | L1 | L2 | L3 | L4 | L5 | L6 | Total frequent itemsets |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 20% | 11 | 36 | 51 | 36 | 13 | 2 | 149 |
-| 60% | 5 | 5 | 1 | 0 | 0 | 0 | 11 |
+The reader trims whitespace, converts names to uppercase, skips empty rows, and counts each item once per transaction. Identical baskets on separate rows count as separate transactions. A missing `items` column or a sheet with no valid transactions raises `ValueError`. The reader uses pandas' default handling of missing values. For example, a cell containing only the literal item code `NA` is treated as empty.
 
-These results were observed in local runs and are consistent with the sample transactions used in Section 2. Confidence-based experiments will be added after association rule generation is implemented.
+## Verify the example results
 
-## Running Tests (Terminal)
+Both rows use the same thresholds of 30% support and 75% confidence. The counts by level run from `L1` to the last nonempty level.
 
-Tests use Python's built-in `unittest` module, so no additional testing package is required. Open a terminal (PowerShell, Command Prompt, or the PyCharm terminal) in the project root and install the dependencies first.
+| Workbook | Transactions | Counts by level | Frequent itemsets | All rules | Strong rules |
+| --- | ---: | --- | ---: | ---: | ---: |
+| `Lecture_Example.xlsx` | 10 | 5, 9, 6, 1 | 21 | 68 | 26 |
+| `Horizontal_Format.xlsx` | 5 | 7, 14, 12, 5, 1 | 39 | 200 | 104 |
 
-### Run all tests
+In the lecture example, 5 of 10 baskets contain both A and B, 6 contain B, and 8 contain A. For the rule **B → A**, support is **5/10 = 50%**, confidence is **5/6 ≈ 83.33%**, and lift is **(5/6) ÷ (8/10) ≈ 1.0417**. It passes both thresholds. In the reverse direction, **A → B** has confidence **5/8 = 62.5%**, below the 75% threshold.
+
+### Threshold experiments
+
+The program varies minimum support over 20%, 30%, 40%, and 60% with confidence fixed at the configured value. It then varies minimum confidence over 50%, 75%, 80%, and 90% with support fixed. Each row reports the counts of frequent itemsets, all rules, and strong rules. On the lecture workbook at 30% support, raising confidence from 50% to 90% reduces the strong-rule count from 59 to 8. The 21 frequent itemsets and 68 candidate rules stay the same.
+
+## How the implementation fits together
+
+| Module | Role |
+| --- | --- |
+| `excel_reader.py` | Read the workbook and clean the transactions. |
+| `apriori.py` | Count support, build the frequent singletons in L1, and keep the candidates that meet minimum support at each level. |
+| `candidates.py` | Join sorted itemsets with a matching prefix. Prune a candidate if any subset of size one less is absent from the previous frequent level. |
+| `association_rules.py` | Split each frequent itemset of size two or more into every nonempty antecedent and complementary consequent. Filter by support and confidence and report lift. |
+| `experiments.py` | Run the two threshold experiments and collect counts. |
+| `visualization.py` | Draw the support bar chart and the two threshold comparisons. |
+| `main.py` | Connect the modules, set the input file and thresholds, and display results. |
+
+The mining loop stops when there are no more candidates or no candidate meets minimum support. Lift compares a rule's confidence to the consequent's support. A lift above 1 indicates a positive association, 1 indicates independence, and below 1 indicates a negative association.
+
+## Run the tests
+
+From the project folder, run the full suite with Python's built-in test runner.
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-### Run a specific test file
+To run the integration tests for the sample workbooks and the mining pipeline:
 
 ```bash
-python -m unittest discover -s tests -p "test_excel_reader.py" -v
-python -m unittest discover -s tests -p "test_candidate_generation.py" -v
 python -m unittest discover -s tests -p "test_integration.py" -v
 ```
 
-### Run one specific test (optional)
+The reviewed Phase 6 version passed **119 tests across 8 test files**, including the two additional tests for minimum-confidence validation and endpoint behavior. The suite covers Excel cleaning, support counting, candidate generation and pruning, Apriori levels, association rules, visualization, threshold experiments, and integration with both workbooks.
 
-```bash
-python -m unittest discover -s tests -p "test_excel_reader.py" -k test_remove_duplicates -v
-```
+## Team responsibilities
 
-### Current Test Results
-
-Latest team-reported local results at the Phase 3 milestone:
-
-| Test suite | Passed |
-| --- | ---: |
-| Candidate generation unit tests | 17 / 17 |
-| Integration tests | 4 / 4 |
-| Full regression suite | 51 / 51 |
-
-The full regression suite includes the candidate generation and integration tests; the counts are not additive. The current tests cover Excel preparation, support counting, the Apriori engine, candidate generation, and integration of the two Apriori modules. Association rule and visualization tests are still pending.
-
-### Reading the results
-
-- `ok` means the test passed.
-- `FAIL` means an assertion did not match the expected result.
-- `ERROR` means an exception occurred while running a test.
-- `Ran N tests` shows how many tests actually ran.
-- `OK` means all executed tests passed; check the test count as well.
-
-**Test discovery:** Name test files `test_*.py` and test methods `test_*`. Run commands from the project root so imports resolve correctly. Tests are an internal quality check, not an explicit additional deliverable in `Apriori_Description.pdf`.
-
-## Remaining Work
-
-1. Implement association rule generation, confidence, strong rule filtering, and lift.
-2. Implement bar charts of frequent itemset support.
-3. Integrate the remaining modules into `main.py` and run experiments with different support and confidence thresholds.
-4. Add the remaining unit and integration tests and rerun the complete regression suite.
-5. Verify every official requirement before final delivery and prepare for the project discussion.
-
-> Academic note: All submitted code should be understood and developed by the team in accordance with the instructor's rules on plagiarism and AI assistance.
+| Member | Responsibility |
+| --- | --- |
+| Student 1 | Excel input, data preparation, and integration |
+| Student 2 | Support counting and the Apriori engine |
+| Student 3 | Candidate generation and pruning |
+| Student 4 | Association rules, confidence, and lift |
+| Student 5 | Visualization, threshold experiments, and testing |
